@@ -1,9 +1,10 @@
 require 'package'
+require 'convenience_functions'
 
 class Vivaldi < Package
   description 'Vivaldi is a new browser that blocks unwanted ads, protects you from trackers, and puts you in control with unique built-in features.'
   homepage 'https://vivaldi.com/'
-  version '7.0.3495.29-1'
+  version '7.1.3570.42-1'
   license 'Vivaldi'
   compatibility 'x86_64 aarch64 armv7l'
   min_glibc '2.37'
@@ -23,10 +24,10 @@ class Vivaldi < Package
   case ARCH
   when 'aarch64', 'armv7l'
     arch = 'armhf'
-    source_sha256 'c21ba34170c5a7afda353c1384bbd5bd2f49df2047c98a350957b76c8cb3b854'
+    source_sha256 '9b4f51ec362f83dc3e7cc7270160091d67d72baef69a6c0bccd5ac4b96a33ab1'
   when 'x86_64'
     arch = 'amd64'
-    source_sha256 '3cd486c76a0221b077bda3454beedca0cf57c3edaa0c42c90575fccc0d540b74'
+    source_sha256 '6d248f0581528d762fc2a72b30fdf4e1fd1d42891d2d0c5593c4e005cd238e58'
   end
 
   source_url "https://downloads.vivaldi.com/stable/vivaldi-stable_#{version}_#{arch}.deb"
@@ -62,6 +63,11 @@ class Vivaldi < Package
 
   def self.postinstall
     system "#{CREW_PREFIX}/share/vivaldi/update-ffmpeg", '--user'
+    ConvenienceFunctions.set_default_browser('Vivaldi', 'vivaldi')
+  end
+
+  def self.preremove
+    ConvenienceFunctions.unset_default_browser('Vivaldi', 'vivaldi')
   end
 
   def self.postremove

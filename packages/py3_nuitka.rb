@@ -3,17 +3,17 @@ require 'buildsystems/pip'
 class Py3_nuitka < Pip
   description 'Nuitka is a Python to binary compiler written in Python. You feed it your Python app, it does a lot of clever things, and spits out an executable or extension module.'
   homepage 'https://nuitka.net/'
-  version "2.5.9-#{CREW_PY_VER}"
+  version "2.6.2-#{CREW_PY_VER}"
   license 'Apache-2.0'
   compatibility 'all'
   source_url 'SKIP'
   binary_compression 'tar.zst'
 
   binary_sha256({
-    aarch64: 'f0375b52e6d1282f7f6b622ceb1154231fc72603a98f3bc26c94413e95646f40',
-     armv7l: 'f0375b52e6d1282f7f6b622ceb1154231fc72603a98f3bc26c94413e95646f40',
-       i686: '953b5c0bc34c3889f47965b79f2cd25986b7237a22f8c2a5184340bdcabdf6d2',
-     x86_64: 'db7ff6ab8b7e54372668a12acd7c3ec0c7899051eff0dd1350d07ead34663fb6'
+    aarch64: '0fd39e4ed2fc129a4c534df95038e836e17ff16c07028e40105162215f35db5a',
+     armv7l: '0fd39e4ed2fc129a4c534df95038e836e17ff16c07028e40105162215f35db5a',
+       i686: '7aa5df5edf567170d35daeb0667b220bd6e513c9c9fa4924516e205de7da5877',
+     x86_64: 'cfa19215eac06dcbbc887b2d240fe606c2fd092634c56ee61af7db42a4b742ec'
   })
 
   depends_on 'python3' => :build
