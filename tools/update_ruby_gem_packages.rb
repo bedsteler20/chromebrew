@@ -8,29 +8,11 @@
 $LOAD_PATH.unshift '../lib'
 require_relative '../lib/color'
 require_relative '../lib/gem_compact_index_client'
+require_relative '../lib/require_gem'
 CREW_NPROC = `nproc`.chomp
 CREW_RUBY_VER = "ruby#{RUBY_VERSION.slice(/(?:.*(?=\.))/)}"
 CREW_VERBOSE = false
 
-def require_gem(gem_name_and_require = nil, require_override = nil)
-  # Allow only loading gems when needed.
-  return if gem_name_and_require.nil?
-
-  gem_name = gem_name_and_require.split('/')[0]
-  begin
-    gem gem_name
-  rescue LoadError
-    puts " -> install #{gem_name} gem".orange
-    Gem.install(gem_name)
-    gem gem_name
-  end
-  requires = if require_override.nil?
-               gem_name_and_require.split('/')[1].nil? ? gem_name_and_require.split('/')[0] : gem_name_and_require
-             else
-               require_override
-             end
-  require requires
-end
 require_gem('activesupport', 'active_support/core_ext/object/blank')
 require_gem 'concurrent-ruby'
 
@@ -48,7 +30,8 @@ numlength = total_files_to_check.to_s.length
 relevant_gem_packages.each_with_index do |package, index|
   pool.post do
     untested_package_name = package.gsub(%r{^packages/ruby_}, '').gsub(/.rb$/, '')
-    gem_test = gems.grep(/#{"^#{untested_package_name}\\s.*$"}/).last.blank? ? gems.grep(/#{"^#{untested_package_name.gsub('_', '-')}\\s.*$"}/).last : gems.grep(/#{"^#{untested_package_name}\\s.*$"}/).last
+    gem_test = gems.grep(/#{"^#{untested_package_name}\\s.*$"}/).last.blank? ? gems.grep(/#{"^\(#{passed_name.gsub(/^ruby_/, '').gsub('_', ')*.(')}\\s\).*$"}/).last : gems.grep(/#{"^#{untested_package_name}\\s.*$"}/).last
+    abort "Cannot find #{passed_name} gem to install.".lightred if gem_test.blank?
     gem_test_name = gem_test.split.first
     puts "#{untested_package_name} versions for #{gem_test_name} are #{gem_test.split[1].split(',')}" if CREW_VERBOSE
     gem_test_versions = gem_test.split[1].split(',')

@@ -3,17 +3,17 @@ require 'buildsystems/pip'
 class Py3_codespell < Pip
   description 'Fix common misspellings in text files.'
   homepage 'https://github.com/codespell-project/codespell'
-  version "2.3.0-#{CREW_PY_VER}"
+  version "2.4.1-#{CREW_PY_VER}"
   license 'GPL-2.0'
   compatibility 'all'
   source_url 'SKIP'
   binary_compression 'tar.zst'
 
   binary_sha256({
-    aarch64: '5e9b610a7825e10c1e03572e9fc12dfceb0872625a86b1ac39a6496a7b4a3c9b',
-     armv7l: '5e9b610a7825e10c1e03572e9fc12dfceb0872625a86b1ac39a6496a7b4a3c9b',
-       i686: '096ed746f41f4a49e0e3705974cad3f4fe8318a6524a33703f6c081de60a85ed',
-     x86_64: 'b0185823f5117581a7a6911ff564e238e04141fdb4833a7f3791bfd5818c38fa'
+    aarch64: '355c64aa91c78058612c960ca7df75c0c4061eb3f366c3d5619b92604a321be1',
+     armv7l: '355c64aa91c78058612c960ca7df75c0c4061eb3f366c3d5619b92604a321be1',
+       i686: '07cccdf520f21a6432092f399fe669cfd4cf28dd0633b669fa632b21c1f35d86',
+     x86_64: '15b05cc886488ed2c56c66389299a5d49cb08f15d19ea7c6144043355a9160a2'
   })
 
   depends_on 'python3'

@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# create_gem_packages version 1.3 (for Chromebrew)
+# create_gem_packages version 1.4 (for Chromebrew)
 # This creates ruby gem packages based upon the default and bundled gems
 # listed at https://stdgems.org/
 # OR from gem names passed in as arguments.
@@ -13,26 +13,8 @@ require 'fileutils'
 require 'json'
 require_relative '../lib/color'
 require_relative '../lib/const'
+require_relative '../lib/require_gem'
 
-def require_gem(gem_name_and_require = nil, require_override = nil)
-  # Allow only loading gems when needed.
-  return if gem_name_and_require.nil?
-
-  gem_name = gem_name_and_require.split('/')[0]
-  begin
-    gem gem_name
-  rescue LoadError
-    puts " -> install #{gem_name} gem".orange
-    Gem.install(gem_name)
-    gem gem_name
-  end
-  requires = if require_override.nil?
-               gem_name_and_require.split('/')[1].nil? ? gem_name_and_require.split('/')[0] : gem_name_and_require
-             else
-               require_override
-             end
-  require requires
-end
 require_gem('httpparty')
 
 def check_gem_binary_build_needed(gem_name = nil, gem_version = nil)
@@ -133,7 +115,6 @@ def create_gem_package(package)
       license '#{license}'
       compatibility 'all'
       source_url 'SKIP'
-
     #{dependencyblock}
       conflicts_ok
       #{check_gem_binary_build_needed(package, version) ? 'gem_compile_needed' : 'no_compile_needed'}

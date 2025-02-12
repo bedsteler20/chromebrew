@@ -3,7 +3,7 @@ require 'package'
 class Gcloud < Package
   description 'Command-line interface for Google Cloud Platform products and services'
   homepage 'https://cloud.google.com/sdk/gcloud/'
-  version '506.0.0'
+  version '510.0.0'
   license 'Apache-2.0'
   compatibility 'all'
   source_url({
@@ -13,10 +13,10 @@ class Gcloud < Package
      x86_64: "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-#{version}-linux-x86_64.tar.gz"
   })
   source_sha256({
-    aarch64: '5d37971bb4edeb7af65a9f4c9a7e30766c0fe7e341669805561c0747bd24b8b1',
-     armv7l: '5d37971bb4edeb7af65a9f4c9a7e30766c0fe7e341669805561c0747bd24b8b1',
-       i686: 'f9af3b7bbce581be89a2e9c8314f20c4f6b09816f9ea903ac1dbb0d5f6bef1da',
-     x86_64: '8f5e9af1854c364fe0c620fefe13abef3668a0e14368ad4f05d3cee47d9128a2'
+    aarch64: '87ebe3e2ea938a7ff3f8586cddec058767d4a4875be7b5930ef3db547e28a807',
+     armv7l: '87ebe3e2ea938a7ff3f8586cddec058767d4a4875be7b5930ef3db547e28a807',
+       i686: '7ccd57b93334029688dae57396bc995122be711524a107530b5d06171e8963d1',
+     x86_64: '72aafb3dca1b68cb6cb65cb1c4745d83e3b015908f5fa408e265959ed67aeadb'
   })
 
   depends_on 'python3'
@@ -24,6 +24,7 @@ class Gcloud < Package
 
   no_shrink
   no_compile_needed
+  print_source_bashrc
 
   def self.build
     @gcloudenv = <<~EOF
@@ -56,24 +57,14 @@ class Gcloud < Package
   end
 
   def self.postinstall
-    puts "\nTo finish the installation, execute the following:".lightblue
-    puts "source ~/.bashrc && gcloud init\n".lightblue
+    ExitMessage.add <<~EOM
+      To finish the installation, execute the following:
+      gcloud init
+    EOM
   end
 
   def self.postremove
-    print 'Would you like to remove the config directories? [y/N] '
-    response = $stdin.gets.chomp.downcase
-    config_dirs = ["#{HOME}/.config/gcloud", "#{CREW_PREFIX}/share/gcloud"]
-    config_dirs.each do |config_dir|
-      next unless Dir.exist? config_dir
-
-      case response
-      when 'y', 'yes'
-        FileUtils.rm_rf config_dir
-        puts "#{config_dir} removed.".lightgreen
-      else
-        puts "#{config_dir} saved.".lightgreen
-      end
-    end
+    Package.agree_to_remove("#{HOME}/.config/gcloud")
+    Package.agree_to_remove("#{CREW_PREFIX}/share/gcloud")
   end
 end
