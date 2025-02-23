@@ -3,7 +3,7 @@ require 'buildsystems/autotools'
 class Curl < Autotools
   description 'Command line tool and library for transferring data with URLs.'
   homepage 'https://curl.se/'
-  version '8.11.1'
+  version '8.12.1'
   license 'curl'
   compatibility 'all'
   source_url "https://curl.se/download/curl-#{version}.tar.xz"
@@ -11,10 +11,10 @@ class Curl < Autotools
   binary_compression 'tar.zst'
 
   binary_sha256({
-    aarch64: '8647e8fb9fffb438d432e23aad432f7138658b6f150a5446c83c24e6bee816a1',
-     armv7l: '8647e8fb9fffb438d432e23aad432f7138658b6f150a5446c83c24e6bee816a1',
-       i686: '1829a7e66679cb47f4ea07ea9ebd6b394afa5d6208be343663d58249bf1fb597',
-     x86_64: '0be964075c3d19998e156127b2cd4081f0728c53c192d47b8e3c943fec87fd13'
+    aarch64: 'efe3ffc129b9d228367e723b6332c4b3f8afc983ec521bdfd2480a49e726f86f',
+     armv7l: 'efe3ffc129b9d228367e723b6332c4b3f8afc983ec521bdfd2480a49e726f86f',
+       i686: '9e8c806535e1afa86737f3f4ff4b7547c9a7b6d88d508e4fc672e70173541bfa',
+     x86_64: '78107de10d329a4c0ea60b81ee0902568f5ef257208aee2cf780a12a167c6551'
   })
 
   depends_on 'brotli' # R
@@ -30,7 +30,6 @@ class Curl < Autotools
   depends_on 'openldap' # R
   depends_on 'openssl' # R
   depends_on 'python3' => :build
-  depends_on 'rust' => :build
   depends_on 'valgrind' => :build
   depends_on 'zlib' # R
   depends_on 'zstd' # R

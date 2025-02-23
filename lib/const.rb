@@ -3,7 +3,7 @@
 require 'etc'
 
 OLD_CREW_VERSION ||= defined?(CREW_VERSION) ? CREW_VERSION : '1.0'
-CREW_VERSION ||= '1.56.8' unless defined?(CREW_VERSION) && CREW_VERSION == OLD_CREW_VERSION
+CREW_VERSION ||= '1.57.2' unless defined?(CREW_VERSION) && CREW_VERSION == OLD_CREW_VERSION
 
 # Kernel architecture.
 KERN_ARCH ||= Etc.uname[:machine]
@@ -41,7 +41,10 @@ else
   HOME ||= File.join(CREW_PREFIX, Dir.home)
 end
 
-CREW_ESSENTIAL_PACKAGES ||= %w[curl gcc_lib glibc gmp lz4 ruby xzutils zlib zstd]
+# These are packages that crew needs to run-- only packages that the bin/crew needs should be required here.
+# lz4, for example, is required for zstd to have lz4 support, but this is not required to run bin/crew.
+# The LIBC_VERSION ternary is to reflect the change from glibc_build to glibc_lib as the source of essential libraries starting at glibc 2.35.
+CREW_ESSENTIAL_PACKAGES ||= %W[gcc_lib #{LIBC_VERSION.to_f > 2.34 ? "glibc_lib#{LIBC_VERSION.delete('.')}" : "glibc_build#{LIBC_VERSION.delete('.')}"} gmp ruby zlib zstd]
 
 CREW_IN_CONTAINER ||= File.exist?('/.dockerenv') || ENV.fetch('CREW_IN_CONTAINER', false) unless defined?(CREW_IN_CONTAINER)
 
@@ -265,7 +268,6 @@ CREW_NINJA ||= ENV.fetch('CREW_NINJA', 'ninja') unless defined?(CREW_NINJA)
 # Cmake sometimes wants to use LIB_SUFFIX to install libs in LIB64, so specify such for x86_64
 # This is often considered deprecated. See discussio at https://gitlab.kitware.com/cmake/cmake/-/issues/18640
 # and also https://bugzilla.redhat.com/show_bug.cgi?id=1425064
-# Let's have two CREW_CMAKE_OPTIONS since this avoids the logic in the recipe file.
 CREW_CMAKE_OPTIONS ||= <<~OPT.chomp
   -DCMAKE_INSTALL_PREFIX=#{CREW_PREFIX} \
   -DCMAKE_LIBRARY_PATH=#{CREW_LIB_PREFIX} \
@@ -276,17 +278,6 @@ CREW_CMAKE_OPTIONS ||= <<~OPT.chomp
   -DCMAKE_SHARED_LINKER_FLAGS='#{CREW_LDFLAGS}' \
   -DCMAKE_MODULE_LINKER_FLAGS='#{CREW_LDFLAGS}' \
   -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE \
-  -DCMAKE_BUILD_TYPE=Release
-OPT
-CREW_CMAKE_FNO_LTO_OPTIONS ||= <<~OPT.chomp
-  -DCMAKE_INSTALL_PREFIX=#{CREW_PREFIX} \
-  -DCMAKE_LIBRARY_PATH=#{CREW_LIB_PREFIX} \
-  -DCMAKE_C_FLAGS='#{CREW_COMMON_FNO_LTO_FLAGS.gsub(/-fuse-ld=.{2,4}\s/, '')}' \
-  -DCMAKE_CXX_FLAGS='#{CREW_COMMON_FNO_LTO_FLAGS.gsub(/-fuse-ld=.{2,4}\s/, '')}' \
-  -DCMAKE_EXE_LINKER_FLAGS=#{CREW_FNO_LTO_LDFLAGS} \
-  -DCMAKE_LINKER_TYPE=#{CREW_LINKER.upcase} \
-  -DCMAKE_SHARED_LINKER_FLAGS=#{CREW_FNO_LTO_LDFLAGS} \
-  -DCMAKE_MODULE_LINKER_FLAGS=#{CREW_FNO_LTO_LDFLAGS} \
   -DCMAKE_BUILD_TYPE=Release
 OPT
 
@@ -354,7 +345,7 @@ CREW_DOCOPT ||= <<~DOCOPT
     crew remove [options] [-v|--verbose] <name> ...
     crew search [options] [-v|--verbose] <name> ...
     crew sysinfo [options] [-v|--verbose]
-    crew update [options] [-v|--verbose] [<compatible>]
+    crew update [options] [-v|--verbose]
     crew upgrade [options] [-k|--keep] [-s|--source] [-v|--verbose] [<name> ...]
     crew upload [options] [-v|--verbose] [<name> ...]
     crew whatprovides [options] <pattern> ...

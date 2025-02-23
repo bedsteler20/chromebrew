@@ -3,7 +3,7 @@ require 'package'
 class Go < Package
   description 'Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.'
   homepage 'https://go.dev'
-  version '1.23.5'
+  version '1.24.0'
   license 'BSD'
   compatibility 'all'
   source_url({
@@ -13,10 +13,10 @@ class Go < Package
      x86_64: "https://go.dev/dl/go#{version}.linux-amd64.tar.gz"
   })
   source_sha256({
-    aarch64: '04e0b5cf5c216f0aa1bf8204d49312ad0845800ab0702dfe4357c0b1241027a3',
-     armv7l: '04e0b5cf5c216f0aa1bf8204d49312ad0845800ab0702dfe4357c0b1241027a3',
-       i686: '6ecf6a41d0925358905fa2641db0e1c9037aa5b5bcd26ca6734caf50d9196417',
-     x86_64: 'cbcad4a6482107c7c7926df1608106c189417163428200ce357695cc7e01d091'
+    aarch64: '695dc54fa14cd3124fa6900d7b5ae39eeac23f7a4ecea81656070160fac2c54a',
+     armv7l: '695dc54fa14cd3124fa6900d7b5ae39eeac23f7a4ecea81656070160fac2c54a',
+       i686: '90521453a59c6ce20364d2dc7c38532949b033b602ba12d782caeb90af1b0624',
+     x86_64: 'dea9ca38a0b852a74e81c26134671af7c0fbe65d81b0dc1c5bfe22cf7d4c8858'
   })
 
   no_compile_needed

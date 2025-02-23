@@ -2,26 +2,8 @@ require 'color'
 require 'gem_compact_index_client'
 require 'package'
 require 'package_utils'
+require 'require_gem'
 
-def require_gem(gem_name_and_require = nil, require_override = nil)
-  # Allow only loading gems when needed.
-  return if gem_name_and_require.nil?
-
-  gem_name = gem_name_and_require.split('/')[0]
-  begin
-    gem gem_name
-  rescue LoadError
-    puts " -> install #{gem_name} gem".orange
-    Gem.install(gem_name)
-    gem gem_name
-  end
-  requires = if require_override.nil?
-               gem_name_and_require.split('/')[1].nil? ? gem_name_and_require.split('/')[0] : gem_name_and_require
-             else
-               require_override
-             end
-  require requires
-end
 require_gem('activesupport', 'active_support/core_ext/object/blank')
 
 def check_gem_binary_build_needed(gem_name = nil, gem_version = nil)
@@ -62,7 +44,8 @@ def set_vars(passed_name = nil, passed_version = nil)
     $gems ||= BasicCompactIndexClient.new.gems
     puts 'Done populating gem information.'.lightgreen
   end
-  gem_test = $gems.grep(/#{"^#{passed_name.gsub(/^ruby_/, '')}\\s.*$"}/).last.blank? ? $gems.grep(/#{"^#{passed_name.gsub(/^ruby_/, '').gsub('_', '-')}\\s.*$"}/).last : $gems.grep(/#{"^#{passed_name.gsub(/^ruby_/, '')}\\s.*$"}/).last
+  gem_test = $gems.grep(/#{"^#{passed_name.gsub(/^ruby_/, '')}\\s.*$"}/).last.blank? ? $gems.grep(/#{"^\(#{passed_name.gsub(/^ruby_/, '').gsub('_', ')*.(')}\\s\).*$"}/).last : $gems.grep(/#{"^#{passed_name.gsub(/^ruby_/, '')}\\s.*$"}/).last
+  abort "Cannot find #{passed_name} gem to install.".lightred if gem_test.blank?
   gem_test_name = gem_test.split.first
   gem_test_versions = gem_test.split[1].split(',')
   # Any version with a letter is considered a prerelease as per

@@ -1,8 +1,6 @@
 require 'minitest/autorun'
 require_relative '../../commands/remove'
 require_relative '../../lib/const'
-require_relative '../../lib/convenience_functions'
-require_relative '../../lib/package_utils'
 
 # Add lib to LOAD_PATH
 $LOAD_PATH << File.join(CREW_LIB_PATH, 'lib')
@@ -11,69 +9,58 @@ $LOAD_PATH << File.join(CREW_LIB_PATH, 'lib')
 String.use_color = false
 
 class RemoveCommandTest < Minitest::Test
-  def setup
-    essential_deps = ConvenienceFunctions.load_symbolized_json[:essential_deps]
-    @random_essential_package_name = essential_deps[rand(0...(essential_deps.length - 1))]
-    puts <<~ESSENTIAL_PACKAGE_REMOVAL_TEST_EOF
-
-      Testing the removal of essential package #{@random_essential_package_name}, which was picked at random from one the essential packages: #{essential_deps.join(', ')}
-      (This should fail.)
-
-    ESSENTIAL_PACKAGE_REMOVAL_TEST_EOF
-    @random_essential_pkg = Package.load_package("#{@random_essential_package_name}.rb")
-
-    @package_with_essential_file = 'gcc_build'
-    @essential_file = File.join(CREW_LIB_PREFIX, 'libstdc++.so.6')
-    puts <<~PACKAGE_WITH_ESSENTIAL_FILE_REMOVAL_TEST_EOF
-
-      Testing the removal of package #{@package_with_essential_file}.
-      (This should succeed, but essential file #{@essential_file}
-      should not be removed.)
-
-    PACKAGE_WITH_ESSENTIAL_FILE_REMOVAL_TEST_EOF
-
-    @normal_package_name = 'xxd_standalone'
-    puts <<~NORMAL_PACKAGE_REMOVAL_TEST_EOF
-
-      Testing the removal of normal package #{@normal_package_name}.
-      (This should succeed.)
-
-    NORMAL_PACKAGE_REMOVAL_TEST_EOF
-    @normal_pkg = Package.load_package("#{@normal_package_name}.rb")
-  end
-
   def test_remove_essential_package
-    # expected_output = %(  #{@random_essential_package_name.capitalize} is considered an essential package needed for
-    # Chromebrew to function and thus cannot be removed.
-    # )
-    # assert_output(expected_output, nil) do
-    # Command.remove(@random_essential_pkg, true)
-    # end
+    random_essential_package = CREW_ESSENTIAL_PACKAGES.sample
+    puts "Testing the removal of essential package #{random_essential_package}, which was picked at random from one of the essential packages: #{CREW_ESSENTIAL_PACKAGES.join(', ')}. This should fail."
 
-    assert_raises(SystemExit) { Command.remove(@random_essential_pkg) }
-  end
-
-  def test_remove_package_with_essential_file
-    assert_output(true) do
-      until PackageUtils.installed?(@package_with_essential_file)
-        system "crew install -d #{@package_with_essential_file}", %i[out err] => File::NULL
-        sleep 2
-      end
-      system "crew remove -d #{@package_with_essential_file}", %i[out err] => File::NULL
-      return File.file?(@essential_file)
+    assert_raises(SystemExit) do
+      # We don't want the output of this command, so we just capture it here and ignore it.
+      capture_io { Command.remove(Package.load_package("#{random_essential_package}.rb")) }
     end
   end
 
+  def test_force_remove_essential_package
+    puts 'Testing the forced removal of essential package zlib. This should succeed.'
+
+    expected_output = "zlib removed!\n"
+    assert_output expected_output, nil do
+      Command.remove(Package.load_package('zlib.rb'), force: true)
+    end
+    # We did just remove an essential package, so let's reinstall that now before it causes any issues.
+    system 'crew install zlib', %i[out err] => File::NULL
+  end
+
+  def test_remove_package_with_essential_file
+    essential_file = File.join(CREW_LIB_PREFIX, 'libstdc++.so.6')
+    puts "Testing the removal of package gcc_build. This should succeed, but essential file #{essential_file} should not be removed."
+
+    system 'crew install gcc_build', %i[out err] => File::NULL
+    capture_io { Command.remove(Package.load_package('gcc_build.rb')) }
+    assert File.file?(essential_file), nil
+  end
+
   def test_remove_normal_package
+    puts 'Testing the removal of normal package xxd_standalone. This should succeed.'
+
+    expected_output = "xxd_standalone removed!\n"
+    assert_output expected_output, nil do
+      system 'crew install xxd_standalone', %i[out err] => File::NULL
+      Command.remove(Package.load_package('xxd_standalone.rb'))
+    end
+  end
+
+  def test_verbosely_remove_normal_package
+    puts 'Testing the verbose removal of normal package xxd_standalone. This should succeed.'
+
     expected_output = <<~EOT
-      #{@normal_package_name} removed
+      Removing file #{CREW_PREFIX}/bin/xxd
+      Removing file #{CREW_PREFIX}/share/man/man1/xxd.1.zst
+      Removing package xxd_standalone from device.json
+      xxd_standalone removed!
     EOT
-    assert_output(/^#{Regexp.escape(expected_output.chomp)}!/, nil) do
-      until PackageUtils.installed?(@normal_package_name)
-        system "crew install -d #{@normal_package_name}", %i[out err] => File::NULL
-        sleep 2
-      end
-      Command.remove(@normal_pkg, true)
+    assert_output expected_output, nil do
+      system 'crew install xxd_standalone', %i[out err] => File::NULL
+      Command.remove(Package.load_package('xxd_standalone.rb'), verbose: true)
     end
   end
 end
