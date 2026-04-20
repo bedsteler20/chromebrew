@@ -3,28 +3,27 @@ require 'package'
 class Boost < Package
   description 'Boost provides free peer-reviewed portable C++ source libraries.'
   homepage 'https://www.boost.org/'
-  version "1.85.0-#{CREW_ICU_VER}-#{CREW_PY_VER}"
+  version "1.90.0-#{CREW_ICU_VER}-#{CREW_PY_VER}"
   license 'Boost-1.0'
-  compatibility 'all'
-  source_url "https://archives.boost.io/release/#{version.split('-').first}/source/boost_#{version.split('-').first.gsub('.', '_')}.tar.bz2"
-  source_sha256 '7009fe1faa1697476bdc7027703a2badb84e849b7b0baad5086b087b971f8617'
+  compatibility 'aarch64 armv7l x86_64'
+  source_url "https://archives.boost.io/release/#{version.split('-')[0]}/source/boost_#{version.split('-')[0].gsub('.', '_')}.tar.bz2"
+  source_sha256 '49551aff3b22cbc5c5a9ed3dbc92f0e23ea50a0f7325b0d198b705e8ee3fc305'
   binary_compression 'tar.zst'
 
   binary_sha256({
-    aarch64: 'a59f454f9f6b1a6639e3e321302fc2226f4807fd8d940299804b9720bb6d7f0d',
-     armv7l: 'a59f454f9f6b1a6639e3e321302fc2226f4807fd8d940299804b9720bb6d7f0d',
-       i686: 'fc521694660afaa6a164efe4b82dbca5861799801d8c47b78f46ed840b27da7b',
-     x86_64: 'eec7fe6a9c7bed95592c758df739230383d2c5913085f709f42aa82d19d2e2cf'
+    aarch64: 'ea9d77bf41aee321dd3892cfb5d3bc6753715f2faaec9fd58a65bf51317802c6',
+     armv7l: 'ea9d77bf41aee321dd3892cfb5d3bc6753715f2faaec9fd58a65bf51317802c6',
+     x86_64: 'b391131bebded0ecca3a3ad81f1d9ef638ec3e6f794c2622bb7b2b0f5ea6c638'
   })
 
-  depends_on 'bzip2' # R
-  depends_on 'gcc_lib' # R
-  depends_on 'glibc' # R
-  depends_on 'icu4c' # R
+  depends_on 'bzip2' => :library
+  depends_on 'gcc_lib' => :library
+  depends_on 'glibc' => :library
+  depends_on 'icu4c' => :library
   depends_on 'python3' => :build
-  depends_on 'xzutils' # R
-  depends_on 'zlib' # R
-  depends_on 'zstd' # R
+  depends_on 'xzutils' => :library
+  depends_on 'zlib' => :library
+  depends_on 'zstd' => :library
 
   def self.build
     system './bootstrap.sh'
