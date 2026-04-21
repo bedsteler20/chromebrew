@@ -3,15 +3,15 @@ require 'package'
 class Delve < Package
   description 'Debugger for the Go programming language'
   homepage 'https://github.com/go-delve/delve'
-  version '1.26.1'
+  version '1.26.2'
   license 'MIT'
   compatibility 'i686 x86_64'
   source_url 'SKIP'
   binary_compression 'tar.zst'
 
   binary_sha256({
-       i686: 'a566eec3b08e17c43f7f3d9e652b4fcbc2f6f673f36a5fa107500d40b505666d',
-     x86_64: 'dda2b038b2dcde6884f3633548b9b5de230645fb5a1fa859ab9cdaa5ad34c599'
+       i686: '34cf5a6bcc257b1213ae03911e2b05469b2fe3072c94211dfb7d35f08aa1453c',
+     x86_64: 'd1f26e4a8457ed625da83f1ede84c958b321315d8360594b85d0dd8279ce85b3'
   })
 
   depends_on 'glibc' => :executable
