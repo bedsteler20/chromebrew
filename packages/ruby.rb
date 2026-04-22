@@ -3,7 +3,7 @@ require 'package'
 class Ruby < Package
   description 'Ruby is a dynamic, open source programming language with a focus on simplicity and productivity.'
   homepage 'https://www.ruby-lang.org/en/'
-  version '4.0.2'
+  version '4.0.3'
   license 'Ruby-BSD and BSD-2'
   compatibility 'all'
   source_url 'https://github.com/ruby/ruby.git'
@@ -11,15 +11,15 @@ class Ruby < Package
   binary_compression 'tar.zst'
 
   binary_sha256({
-    aarch64: 'ace2cc659bf213bd8e792e4ec27773a925fcd6ba1a977402e9b5a16da5a17fee',
-     armv7l: 'ace2cc659bf213bd8e792e4ec27773a925fcd6ba1a977402e9b5a16da5a17fee',
-       i686: '3169f4db3d25295f0a8d6ff6eca907d13e82b863f44a0f198a7e3c3f9c2b5696',
-     x86_64: 'bf4d0a295a756de16751f4f2e9c88e4122e8251536faa7819529725fb6a6ea48'
+    aarch64: '18e50ee30327b8e72da4361a8123ee6d9c68e9ab22a0bd111e63a2c1a05f34dc',
+     armv7l: '18e50ee30327b8e72da4361a8123ee6d9c68e9ab22a0bd111e63a2c1a05f34dc',
+       i686: '7553459f4f3681058147d4da2f29bb8da0f21929489469aab7485c46be7cf44e',
+     x86_64: '12d8c79c90c79ae9a50b94f47036b9ab3cea3d7ba518620fd9e867119d9f28e0'
   })
 
   depends_on 'ca_certificates' => :logical
   depends_on 'filecmd' => :logical # (This is to enable file command use in package files.)
-  depends_on 'gcc_lib' # R
+  depends_on 'gcc_lib' => :library
   depends_on 'glibc' => :library
   depends_on 'gmp' => :library
   depends_on 'libffi' # R
