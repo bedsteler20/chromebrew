@@ -3,7 +3,7 @@ require 'buildsystems/autotools'
 class Elfutils < Autotools
   description 'elfutils is a collection of utilities and libraries to read, create and modify ELF binary files, find and handle DWARF debug data, symbols, thread state and stacktraces for processes and core files on GNU/Linux.'
   homepage 'https://sourceware.org/elfutils/'
-  version '0.194'
+  version '0.195'
   license 'GPL-2+ or LGPL-3+'
   compatibility 'all'
   source_url 'https://sourceware.org/git/elfutils.git'
@@ -11,10 +11,10 @@ class Elfutils < Autotools
   binary_compression 'tar.zst'
 
   binary_sha256({
-    aarch64: 'ac27e5b22d610883597044e05b090d068264abe987d74150d63415f3c48b88a6',
-     armv7l: 'ac27e5b22d610883597044e05b090d068264abe987d74150d63415f3c48b88a6',
-       i686: '2ff85a2480832c7b0cff9e0b35134da1eafdc4880a2214fea9ca79d16df42a59',
-     x86_64: 'a1c3e80e55dffc3e1e9503a87552d38a34fbb3fc83bbf7eadf359c154a9bef2e'
+    aarch64: '8ff4837ba7584ef891206279b5e7ed8eb47a1df45ea0445f4651cd23edf3ed6d',
+     armv7l: '8ff4837ba7584ef891206279b5e7ed8eb47a1df45ea0445f4651cd23edf3ed6d',
+       i686: '03cb6fd66831a2a7f974b431763211c6ce24de7e032a83074b0e030ff4737176',
+     x86_64: 'a64b166958d85734e54361f65b136d7fc591ddf0ffb91dcf26f0836d3675a4c9'
   })
 
   depends_on 'bzip2' => :library
@@ -30,6 +30,15 @@ class Elfutils < Autotools
   autotools_configure_options "#{'--disable-libdebuginfod --disable-debuginfod' if ARCH == 'i686'} --enable-maintainer-mode --program-prefix='eu-'"
 
   def self.patch
+    if version == '0.195'
+      patches = [
+        # gawk 5.4 doesn't like C++ style comments.
+        # https://sourceware.org/git/?p=elfutils.git;a=commitdiff_plain;h=c1b0ff9d92b08397b0e653a8ccefe1d1248cba57
+        ['https://sourceware.org/git/?p=elfutils.git;a=commitdiff_plain;h=c1b0ff9d92b08397b0e653a8ccefe1d1248cba57',
+         'ef20423278ad0330a7031e4aa7aee39fbb908ff24cfb0b690e967824645ac9c2']
+      ]
+      ConvenienceFunctions.patch(patches)
+    end
     return unless ARCH == 'i686'
 
     # https://sourceware.org/git/?p=glibc.git;a=commit;h=0be74c5c7cb239e4884d1ee0fd48c746a0bd1a65
