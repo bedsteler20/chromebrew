@@ -3,7 +3,7 @@ require 'buildsystems/rust'
 class Hurl < RUST
   description 'Hurl is a command line tool that runs HTTP requests defined in a simple plain text format.'
   homepage 'https://hurl.dev/'
-  version '8.0.0'
+  version '8.0.1'
   license 'Apache-2.0'
   compatibility 'x86_64'
   source_url 'https://github.com/Orange-OpenSource/hurl.git'
@@ -11,7 +11,7 @@ class Hurl < RUST
   binary_compression 'tar.zst'
 
   binary_sha256({
-     x86_64: 'fa0c14db94d789b48e8967dc9db459457c73d0b3863986951a32cc6030bf3d65'
+     x86_64: '3147be4ef0172eee0e18c29abf9fa700b4e12cbde4240d53456147646ce4adc0'
   })
 
   depends_on 'curl' => :executable
